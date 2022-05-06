@@ -5,14 +5,20 @@ import { UNITS, LANGUAGE, CNT, APPID, BASE_URL, PROTOCOL  } from "@env"
 
 export default function App() {
   const [cidade, setCidade] = useState('')
-  const [previsoes, setProvisoes] = useState([])
+  const [previsoes, setPrevisoes] = useState([])
   const capturarCidade = (cidadeDigitada) => {
     setCidade(cidadeDigitada)
   }
 
   const obterPrevisoes = () => {
     const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
-    console.log(endPoint)
+    fetch(endPoint)
+    .then (dados =>{ 
+      return dados.json()
+    })
+    .then(dados => {
+      setPrevisoes(dados["list"])
+    })
   }
   return (
     <View style={styles.containerView}>
