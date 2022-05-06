@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Button, TextInput } from 'react-native';
-import { UNITS, LANGUAGE, CNT, APPID, BASE_URL  } from "@env"
+import { UNITS, LANGUAGE, CNT, APPID, BASE_URL, PROTOCOL  } from "@env"
 
 
 export default function App() {
@@ -10,10 +10,10 @@ export default function App() {
     setCidade(cidadeDigitada)
   }
 
-
-
-
-  /* const endPoint = `https://api.openweathermap.org/data/2.5/forecast?lang=${lang}&units=${units}&cnt=${cnt}&appid=${appid}&q=` */
+  const obterPrevisoes = () => {
+    const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
+    console.log(endPoint)
+  }
   return (
     <View style={styles.containerView}>
       <View style={styles.entradaView}>
@@ -21,7 +21,8 @@ export default function App() {
           value={cidade}
           onChangeText={capturarCidade}
           placeholder="Digite o nome de uma cidade"/>
-        <Button title="ok"/>
+        <Button title="ok"
+          onPress={obterPrevisoes}/>
 
       </View>
       <FlatList
