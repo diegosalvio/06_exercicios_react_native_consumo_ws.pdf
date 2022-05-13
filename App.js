@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Button, TextInput } from 'react-native';
 import { UNITS, LANGUAGE, CNT, APPID, BASE_URL, PROTOCOL  } from "@env"
+import  PrevisaoItem  from './components/PrevisaoItem'
 
 
 export default function App() {
@@ -31,21 +32,23 @@ export default function App() {
           onPress={obterPrevisoes}/>
 
       </View>
-      <FlatList
-        data={previsoes}
-        renderItem={p=> (
-          <Text>{JSON.stringfy(p)}</Text>
-        )}/>
+      <View style={{alignItems: 'center'}}>
+        <FlatList
+          data={previsoes}
+          renderItem={p=> (
+            <PrevisaoItem previsao={p.item}/>
+          )}/>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   containerView: {
-    padding: 40,
+    padding: 40
   },
   entradaView: {
-    marginBottom: 8
+    marginBottom: 8,
   },
   cidadeTextInput: {
     padding: 12,
@@ -53,5 +56,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     marginBottom: 4
   }
-  
 });
