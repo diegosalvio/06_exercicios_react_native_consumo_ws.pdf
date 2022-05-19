@@ -6,40 +6,33 @@ import  PrevisaoItem  from './components/PrevisaoItem'
 
 export default function App() {
   const [cidade, setCidade] = useState('')
-  const [previsoes, setPrevisoes] = useState([])
+  const [previsoes, setPrevisoes] = useState({})
   const capturarCidade = (cidadeDigitada) => {
     setCidade(cidadeDigitada)
   }
 
   const obterPrevisoes = async () => {
     const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
-    fetch(endPoint)
-    .then (dados =>{ 
-      return dados.json()
-    })
-    .then(dados => {
-      setPrevisoes(dados["list"])
-    })
-
     const primeiraResposta = await fetch(endPoint)
     const primeiraRespostaTratada = await primeiraResposta.json()
+    setPrevisoes(primeiraRespostaTratada['list'])
     console.log("Primeira tratada: ", primeiraRespostaTratada)
     const lat = parseInt(primeiraRespostaTratada.city.coord.lat)
     const lon = parseInt(primeiraRespostaTratada.city.coord.lon)
     console.log(lat, lon)
-    const segundoEndPoint = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${APPID}`
+    const segundoEndPoint = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${APPID}&units=metric`
     const segundaResposta = await fetch(segundoEndPoint)
     const segundaRespostaTratada = await segundaResposta.json()
     console.log("Segunda tratada:  ", segundaRespostaTratada)
     
     const dt = segundaRespostaTratada.current.dt;
     const temp = segundaRespostaTratada.current.temp;
-    //const temp_max = segundaRespostaTratada.current.temp_max;
+    const sensacao = segundaRespostaTratada.current.feels_like;
     const humidity = segundaRespostaTratada.current.humidity;
     const description = segundaRespostaTratada.current.weather[0].description;
     console.log("dt: ", dt)
-    console.log("temp_min: ", temp)
-    //console.log("temp_max: ", temp_max)
+    console.log("temperatura: ", temp)
+    console.log("sensação: ", sensacao)
     console.log("humidity: ", humidity)
     console.log("description: ", description)
 
