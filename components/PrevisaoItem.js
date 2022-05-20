@@ -60,3 +60,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
 });
+
+/* 
+const dt = segundaRespostaTratada.current.dt;
+const temp = segundaRespostaTratada.current.temp;
+const humidity = segundaRespostaTratada.current.humidity;
+const description = segundaRespostaTratada.current.weather[0].description;
+  console.log(icon)
+  console.log("dt: ", dt)
+  console.log("temperatura: ", temp)
+  console.log("sensação: ", sensacao)
+  console.log("humidity: ", humidity)
+  console.log("description: ", description)
+  console.log(sunrise)
+  console.log(sunset)
+  */

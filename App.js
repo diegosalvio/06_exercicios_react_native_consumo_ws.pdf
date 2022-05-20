@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Button, TextInput, Image } from 'react-native';
 import { UNITS, LANGUAGE, CNT, APPID, BASE_URL, PROTOCOL  } from "@env"
-import  PrevisaoItem  from './components/PrevisaoItem'
-
 
 export default function App() {
   const [cidade, setCidade] = useState('')
@@ -10,36 +8,32 @@ export default function App() {
   const capturarCidade = (cidadeDigitada) => {
     setCidade(cidadeDigitada)
   }
+  const [sunrise, setSunrise] = useState()
+  const [sunset, setSunset] = useState()
+  const [icon, setIcon] = useState()
+  const [sensacao, setSensacao] = useState()
 
   const obterPrevisoes = async () => {
-    const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
-    const primeiraResposta = await fetch(endPoint)
-    const primeiraRespostaTratada = await primeiraResposta.json()
-    setPrevisoes(primeiraRespostaTratada['list'])
-    console.log("Primeira tratada: ", primeiraRespostaTratada)
-    const lat = parseInt(primeiraRespostaTratada.city.coord.lat)
-    const lon = parseInt(primeiraRespostaTratada.city.coord.lon)
-    console.log(lat, lon)
-    const segundoEndPoint = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${APPID}&units=metric`
-    const segundaResposta = await fetch(segundoEndPoint)
-    const segundaRespostaTratada = await segundaResposta.json()
-    console.log("Segunda tratada:  ", segundaRespostaTratada)
-    
-    const dt = segundaRespostaTratada.current.dt;
-    const temp = segundaRespostaTratada.current.temp;
-    const sensacao = segundaRespostaTratada.current.feels_like;
-    const humidity = segundaRespostaTratada.current.humidity;
-    const description = segundaRespostaTratada.current.weather[0].description;
-    console.log("dt: ", dt)
-    console.log("temperatura: ", temp)
-    console.log("sensação: ", sensacao)
-    console.log("humidity: ", humidity)
-    console.log("description: ", description)
-
-
-
-
-    
+  const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
+  const primeiraResposta = await fetch(endPoint)
+  const primeiraRespostaTratada = await primeiraResposta.json()
+  setPrevisoes(primeiraRespostaTratada['list'])
+  console.log("Primeira tratada: ", primeiraRespostaTratada)
+  const lat = parseInt(primeiraRespostaTratada.city.coord.lat)
+  const lon = parseInt(primeiraRespostaTratada.city.coord.lon)
+  console.log(lat, lon)
+  const segundoEndPoint = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${APPID}&units=metric`
+  const segundaResposta = await fetch(segundoEndPoint)
+  const segundaRespostaTratada = await segundaResposta.json()
+  console.log("Segunda tratada:  ", segundaRespostaTratada)
+  const sensacao = segundaRespostaTratada.current.feels_like;
+  setSensacao("Sensação Térmica: " + sensacao)
+  const sunrise = new Date (segundaRespostaTratada.current.sunrise * 1000).toLocaleTimeString()
+  setSunrise("Nascer do Sol: " + sunrise)
+  const sunset = new Date (segundaRespostaTratada.current.sunset * 1000).toLocaleTimeString()
+  setSunset("Pôr do Sol: " + sunset)
+  const icon = segundaRespostaTratada.current.weather[0].icon;
+  setIcon(icon)  
   }
   return (
     <View style={styles.containerView}>
@@ -50,14 +44,27 @@ export default function App() {
           placeholder="Digite o nome de uma cidade"/>
         <Button title="ok"
           onPress={obterPrevisoes}/>
-
       </View>
       <View style={{alignItems: 'center'}}>
-        <FlatList
-          data={previsoes}
-          renderItem={p=> (
-            <PrevisaoItem previsao={p.item}/>
-          )}/>
+        <View style={styles.cartao}>
+        <View style={styles.tela}>
+        <Image
+          style={styles.imagem}
+          source={{ uri: "https://openweathermap.org/img/wn/" + icon + ".png"}}
+        />
+        <View>
+          <View style={styles.primeiraLinha}>
+            <Text>{sensacao}</Text>
+          </View>
+          <View style={styles.segundaLinha}>
+            <Text style={styles.valor}> {sunrise}</Text>
+          </View>
+          <View style={styles.segundaLinha}>
+            <Text style={styles.valor}>{sunset}</Text>
+          </View>
+        </View>
+      </View>
+        </View>
       </View>
     </View>
   );
@@ -65,7 +72,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   containerView: {
-    padding: 40
+    padding: 40,
   },
   entradaView: {
     marginBottom: 8,
@@ -75,5 +82,35 @@ const styles = StyleSheet.create({
     borderBottomColor: '#FF9800',
     borderBottomWidth: 2,
     marginBottom: 4
-  }
+  },
+  tela: {
+    flexDirection: "row",
+  },
+  imagem: {
+    width: 50,
+    height: 50,
+  },
+  primeiraLinha: {
+    fexDirection: "row",
+    justifyContent: "center",
+  },
+  segundaLinha: {
+    fex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: "#DDD",
+  },
+  valor: {
+    marginHorizontal: 2,
+  },
+  cartao: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    elevation: 4,
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8
+}
 });
