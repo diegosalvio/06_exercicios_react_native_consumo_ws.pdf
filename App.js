@@ -4,7 +4,6 @@ import { UNITS, LANGUAGE, CNT, APPID, BASE_URL, PROTOCOL  } from "@env"
 
 export default function App() {
   const [cidade, setCidade] = useState('')
-  const [previsoes, setPrevisoes] = useState({})
   const capturarCidade = (cidadeDigitada) => {
     setCidade(cidadeDigitada)
   }
@@ -17,20 +16,20 @@ export default function App() {
   const endPoint = `${PROTOCOL}://${BASE_URL}?lang=${LANGUAGE}&units${UNITS}&cnt=${CNT}&appid=${APPID}&q=${cidade}`
   const primeiraResposta = await fetch(endPoint)
   const primeiraRespostaTratada = await primeiraResposta.json()
-  setPrevisoes(primeiraRespostaTratada['list'])
-  console.log("Primeira tratada: ", primeiraRespostaTratada)
+
+
   const lat = parseInt(primeiraRespostaTratada.city.coord.lat)
   const lon = parseInt(primeiraRespostaTratada.city.coord.lon)
-  console.log(lat, lon)
+
   const segundoEndPoint = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${APPID}&units=metric`
   const segundaResposta = await fetch(segundoEndPoint)
   const segundaRespostaTratada = await segundaResposta.json()
-  console.log("Segunda tratada:  ", segundaRespostaTratada)
+
   const sensacao = segundaRespostaTratada.current.feels_like;
-  setSensacao("Sensação Térmica: " + sensacao)
-  const sunrise = new Date (segundaRespostaTratada.current.sunrise * 1000).toLocaleTimeString()
+  setSensacao("Sensação Térmica: " + sensacao + "\u00B0C")
+  const sunrise = new Date (segundaRespostaTratada.current.sunrise * 1000).toLocaleTimeString([],{hour: '2-digit', minute: '2-digit'})
   setSunrise("Nascer do Sol: " + sunrise)
-  const sunset = new Date (segundaRespostaTratada.current.sunset * 1000).toLocaleTimeString()
+  const sunset = new Date (segundaRespostaTratada.current.sunset * 1000).toLocaleTimeString([],{hour: '2-digit', minute: '2-digit'})
   setSunset("Pôr do Sol: " + sunset)
   const icon = segundaRespostaTratada.current.weather[0].icon;
   setIcon(icon)  
